@@ -1,0 +1,30 @@
+name: Daily NHL Schedule Pressure Cards
+
+on:
+  schedule:
+    # Runs at 10:00 AM UTC daily (6 AM ET)
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Manual trigger from GitHub UI
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests Pillow
+
+      - name: Generate and publish pressure cards
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          python nhl_schedule_pressure_card.py
